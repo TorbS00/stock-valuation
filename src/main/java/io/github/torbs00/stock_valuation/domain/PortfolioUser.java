@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 
 /**
  * @author TorbS00 on 24.09.2024.
- * @project StockMaster.
+ * @project stock-valuation.
  */
 @Entity
 public class PortfolioUser {
@@ -18,7 +18,6 @@ public class PortfolioUser {
 
     private String name;
 
-    // Constructors, Getters, Setters
     public PortfolioUser() {}
 
     public PortfolioUser(String name) {

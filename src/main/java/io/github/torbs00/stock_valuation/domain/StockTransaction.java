@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 /**
  * @author TorbS00 on 24.09.2024.
- * @project StockMaster.
+ * @project stock-valuation.
  */
 @Entity
 public class StockTransaction {
@@ -20,14 +20,13 @@ public class StockTransaction {
     private Portfolio portfolio;
 
     @Embedded
-    private Stock stock;  // Embed stock details within the transaction
+    private Stock stock;
 
-    private double purchasePrice;  // Price at the time of purchase
-    private int amount;  // Number of shares purchased
-    private boolean isBuy;  // True if buy transaction, false if sell
-    private LocalDateTime transactionTime;  // Time of the transaction
+    private double purchasePrice;
+    private int amount;
+    private boolean isBuy;
+    private LocalDateTime transactionTime;
 
-    // Constructors, Getters, Setters
     public StockTransaction() {}
 
     public StockTransaction(Portfolio portfolio, Stock stock, double purchasePrice, int amount, boolean isBuy, LocalDateTime transactionTime) {

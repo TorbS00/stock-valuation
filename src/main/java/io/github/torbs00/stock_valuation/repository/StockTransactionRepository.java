@@ -2,7 +2,7 @@ package io.github.torbs00.stock_valuation.repository;
 
 /**
  * @author TorbS00 on 24.09.2024.
- * @project StockMaster.
+ * @project stock-valuation.
  */
 import io.github.torbs00.stock_valuation.domain.Portfolio;
 import io.github.torbs00.stock_valuation.domain.StockTransaction;

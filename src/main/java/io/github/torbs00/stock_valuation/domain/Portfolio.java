@@ -6,27 +6,26 @@ import java.util.List;
 
 /**
  * @author TorbS00 on 24.09.2024.
- * @project StockMaster.
+ * @project stock-valuation.
  */
 @Entity
 public class Portfolio {
 
     @Id
-    private Long id;  // Manually set the same ID as PortfolioUser
+    private Long id;
 
     @OneToOne
-    @MapsId  // Maps the same ID as the PortfolioUser's ID
+    @MapsId
     private PortfolioUser user;
 
     @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
-    private List<StockTransaction> transactions;  // List of stock transactions for the portfolio
+    private List<StockTransaction> transactions;
 
-    // Constructors, Getters, Setters
     public Portfolio() {}
 
     public Portfolio(PortfolioUser user) {
         this.user = user;
-        this.id = user.getId();  // Set the ID to be the same as PortfolioUser
+        this.id = user.getId();
     }
 
     public Long getId() {

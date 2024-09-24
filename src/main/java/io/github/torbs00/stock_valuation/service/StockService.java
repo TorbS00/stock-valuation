@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author TorbS00 on 24.09.2024.
- * @project StockMaster.
+ * @project stock-valuation.
  */
 @Service
 public class StockService {

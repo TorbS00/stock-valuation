@@ -2,7 +2,7 @@ package io.github.torbs00.stock_valuation.domain;
 
 /**
  * @author TorbS00 on 24.09.2024.
- * @project StockMaster.
+ * @project stock-valuation.
  */
 
 import jakarta.persistence.*;
@@ -10,11 +10,10 @@ import jakarta.persistence.*;
 @Embeddable
 public class Stock {
 
-    private String symbol;  // Stock symbol (e.g., AAPL)
-    private String name;    // Company name
-    private double currentPrice;  // Real-time price
+    private String symbol;
+    private String name;
+    private double currentPrice;
 
-    // Constructors, Getters, Setters
     public Stock() {}
 
     public Stock(String symbol, String name, double currentPrice) {
