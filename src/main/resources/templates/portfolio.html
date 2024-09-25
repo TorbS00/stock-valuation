@@ -1,0 +1,39 @@
+<!-- portfolio.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Portfolio</title>
+</head>
+<body>
+<h1>Portfolio for <span th:text="${username}"></span></h1>
+
+<h2>Your Stocks</h2>
+<ul>
+    <li th:each="transaction : ${portfolio.transactions}">
+        Stock: <span th:text="${transaction.stock.symbol}"></span> -
+        Amount: <span th:text="${transaction.amount}"></span> -
+        Purchase Price: <span th:text="${transaction.purchasePrice}"></span>
+    </li>
+</ul>
+
+<h3>Buy Stocks</h3>
+<form action="/portfolio/buy" method="POST">
+    <label for="stockSymbol">Stock Ticker:</label>
+    <input type="text" id="stockSymbol" name="stockSymbol" required>
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" required>
+    <input type="hidden" name="username" th:value="${username}">
+    <button type="submit">Buy</button>
+</form>
+
+<h3>Sell Stocks</h3>
+<form action="/portfolio/sell" method="POST">
+    <label for="stockSymbolSell">Stock Ticker:</label>
+    <input type="text" id="stockSymbolSell" name="stockSymbol" required>
+    <label for="amountSell">Amount:</label>
+    <input type="number" id="amountSell" name="amountToSell" required>
+    <input type="hidden" name="username" th:value="${username}">
+    <button type="submit">Sell</button>
+</form>
+</body>
+</html>

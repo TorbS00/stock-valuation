@@ -18,7 +18,7 @@ public class Portfolio {
     @MapsId
     private PortfolioUser user;
 
-    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "portfolio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StockTransaction> transactions;
 
     public Portfolio() {}

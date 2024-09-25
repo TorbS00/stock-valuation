@@ -9,24 +9,26 @@ import io.github.torbs00.stock_valuation.repository.PortfolioUserRepository;
 import io.github.torbs00.stock_valuation.repository.StockTransactionRepository;
 import io.github.torbs00.stock_valuation.service.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author TorbS00 on 25.09.2024.
  * @project stock-valuation.
  */
-@RestController
+@Controller
 @RequestMapping("/portfolio")
 public class PortfolioController {
 
     @Autowired
-    private PortfolioUserRepository portfolioUserRepository;
+    private PortfolioRepository portfolioRepository;
 
     @Autowired
-    private PortfolioRepository portfolioRepository;
+    private PortfolioUserRepository portfolioUserRepository;
 
     @Autowired
     private StockTransactionRepository stockTransactionRepository;
@@ -35,48 +37,64 @@ public class PortfolioController {
     private StockService stockService;
 
     @PostMapping("/buy")
-    public String buyStock(@RequestParam Long userId, @RequestParam String stockSymbol, @RequestParam int amount) {
-        PortfolioUser user = portfolioUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    public String buyStock(@RequestParam String username, @RequestParam String stockSymbol,
+                           @RequestParam int amount) {
+        PortfolioUser user = portfolioUserRepository.findByName(username);
         Portfolio portfolio = portfolioRepository.findByUser(user);
 
-        String name = stockService.getStockName(stockSymbol);
+        String stockName = stockService.getStockName(stockSymbol);
         double price = stockService.getStockPrice(stockSymbol);
 
-        Stock stock = new Stock(stockSymbol, name, price);
-        StockTransaction transaction = new StockTransaction(portfolio, stock, price, amount, true, LocalDateTime.now());
-
+        StockTransaction transaction = new StockTransaction(portfolio, new Stock(stockSymbol, stockName, price), price, amount, true, LocalDateTime.now());
         stockTransactionRepository.save(transaction);
-        return "Bought " + amount + " shares of " + stockSymbol + " at $" + price;
+
+        return "redirect:/portfolio/" + username;
     }
 
     @PostMapping("/sell")
-    public String sellStock(@RequestParam Long userId, @RequestParam String stockSymbol, @RequestParam int amountToSell) {
-        PortfolioUser user = portfolioUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+    public String sellStock(@RequestParam String username, @RequestParam String stockSymbol,
+                            @RequestParam int amountToSell, Model model) {
+        PortfolioUser user = portfolioUserRepository.findByName(username);
         Portfolio portfolio = portfolioRepository.findByUser(user);
 
-        List<StockTransaction> transactions = stockTransactionRepository.findByPortfolioAndStockSymbolAndIsBuyTrue(portfolio, stockSymbol);
-        int remainingToSell = amountToSell;
+        int[] remainingToSell = { amountToSell };
 
-        for (StockTransaction transaction : transactions) {
-            if (remainingToSell <= 0) break;
+        stockTransactionRepository.findByPortfolioAndStockSymbolAndIsBuyTrue(portfolio, stockSymbol)
+                .forEach(transaction -> {
+                    if (remainingToSell[0] > 0) {
+                        int available = transaction.getAmount();
+                        if (available <= remainingToSell[0]) {
+                            transaction.setAmount(0);
+                            remainingToSell[0] -= available;
+                        } else {
+                            transaction.setAmount(available - remainingToSell[0]);
+                            remainingToSell[0] = 0;
+                        }
+                        stockTransactionRepository.save(transaction);
+                    }
+                });
 
-            int availableStock = transaction.getAmount();
-            if (availableStock <= remainingToSell) {
-                remainingToSell -= availableStock;
-                transaction.setAmount(0);
-            } else {
-                transaction.setAmount(availableStock - remainingToSell);
-                remainingToSell = 0;
-            }
-            stockTransactionRepository.save(transaction);
+        model.addAttribute("portfolio", portfolio);
+        return "redirect:/portfolio/" + username;
+    }
+
+    @GetMapping("/{username}")
+    public String showPortfolioByName(@PathVariable String username, Model model) {
+        PortfolioUser user = portfolioUserRepository.findByName(username);
+        if (user == null) {
+            throw new RuntimeException("User not found");
         }
 
-        return "Sold " + amountToSell + " shares of " + stockSymbol;
+        Portfolio portfolio = portfolioRepository.findByUser(user);
+
+        if (portfolio.getTransactions() == null) {
+            portfolio.setTransactions(new ArrayList<>());
+        }
+
+        model.addAttribute("portfolio", portfolio);
+        model.addAttribute("username", username);
+
+        return "portfolio";
     }
 
-    @GetMapping("/{userId}")
-    public Portfolio viewPortfolio(@PathVariable Long userId) {
-        PortfolioUser user = portfolioUserRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return portfolioRepository.findByUser(user);
-    }
 }
