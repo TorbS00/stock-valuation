@@ -4,6 +4,10 @@
 
 This project is a **Java-based Stock Portfolio Valuation Website** built using the **Spring Boot** framework. The application allows users to manage their stock portfolios, retrieve real-time stock prices via the **Alpha Vantage API**, and perform portfolio valuations using techniques such as Monte Carlo simulation, Discounted Cash Flow (DCF), and Sharpe Ratio calculation.
 
+## Devlogs
+Devlogs can be found in the Wiki section.
+https://github.com/TorbS00/stock-valuation/wiki/Devlogs
+
 ## Features
 
 - **User Management**: Users can create portfolios by simply entering a username (no password required).
