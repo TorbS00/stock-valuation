@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
     <title>Login</title>
+    <link th:href="@{/css/login_styles.css}" rel="stylesheet" />
 </head>
 <body>
-<h2>Enter Username</h2>
 <form action="/login" method="POST">
-    <label for="username">Username:</label>
-    <input type="text" id="username" name="username" required>
-    <button type="submit">Submit</button>
+    <h3>Login Here</h3>
+    <label for="username">Username</label>
+    <input type="text" placeholder="JohnDoe" id="username" name="username" required>
+    <button type="submit">Log In</button>
 </form>
 </body>
 </html>
