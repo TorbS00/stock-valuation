@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,30 +25,33 @@ import java.util.ArrayList;
 @RequestMapping("/portfolio")
 public class PortfolioController {
 
-    @Autowired
-    private PortfolioRepository portfolioRepository;
+    private final PortfolioRepository portfolioRepository;
+    private final PortfolioUserRepository portfolioUserRepository;
+    private final StockTransactionRepository stockTransactionRepository;
+    private final StockService stockService;
 
-    @Autowired
-    private PortfolioUserRepository portfolioUserRepository;
-
-    @Autowired
-    private StockTransactionRepository stockTransactionRepository;
-
-    @Autowired
-    private StockService stockService;
+    public PortfolioController(PortfolioRepository portfolioRepository, PortfolioUserRepository portfolioUserRepository, StockTransactionRepository stockTransactionRepository, StockService stockService) {
+        this.portfolioRepository = portfolioRepository;
+        this.portfolioUserRepository = portfolioUserRepository;
+        this.stockTransactionRepository = stockTransactionRepository;
+        this.stockService = stockService;
+    }
 
     @PostMapping("/buy")
     public String buyStock(@RequestParam String username, @RequestParam String stockSymbol,
-                           @RequestParam int amount) {
+                           @RequestParam int amount, Model model, RedirectAttributes redirectAttributes) {
         PortfolioUser user = portfolioUserRepository.findByName(username);
         Portfolio portfolio = portfolioRepository.findByUser(user);
-
-        String stockName = stockService.getStockName(stockSymbol);
-        double price = stockService.getStockPrice(stockSymbol);
-
-        StockTransaction transaction = new StockTransaction(portfolio, new Stock(stockSymbol, stockName, price), price, amount, true, LocalDateTime.now());
-        stockTransactionRepository.save(transaction);
-
+        model.addAttribute("notfound", null);
+        try {
+            double price = stockService.getStockPrice(stockSymbol);
+            String stockName = stockService.getStockName(stockSymbol);
+            StockTransaction transaction = new StockTransaction(portfolio, new Stock(stockSymbol, stockName, price), price, amount, true, LocalDateTime.now());
+            stockTransactionRepository.save(transaction);
+        } catch (Exception swallowed) {
+            redirectAttributes.addFlashAttribute("notfound", "Found no stock with the provided ticker value");
+            return "redirect:/portfolio/" + user.getName();
+        }
         return "redirect:/portfolio/" + username;
     }
 

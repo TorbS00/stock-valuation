@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class UserController {
 
-    @Autowired
-    private PortfolioUserRepository portfolioUserRepository;
+    private final PortfolioUserRepository portfolioUserRepository;
+    private final PortfolioRepository portfolioRepository;
 
-    @Autowired
-    private PortfolioRepository portfolioRepository;
+    public UserController(PortfolioUserRepository portfolioUserRepository, PortfolioRepository portfolioRepository) {
+        this.portfolioUserRepository = portfolioUserRepository;
+        this.portfolioRepository = portfolioRepository;
+    }
 
     @GetMapping("/")
     public String showLoginPage() {
