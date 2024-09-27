@@ -1,87 +1,76 @@
 package io.github.torbs00.stock_valuation.service;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 /**
- * @author TorbS00 on 24.09.2024.
+ * @author TorbS00 on 27.09.2024.
  * @project stock-valuation.
  */
 @Service
 public class StockService {
 
-    private final String apikey;
-    private final String baseUrl;
+    private final String apiKey;
+    private final WebClient restClient;
 
-    public StockService(@Value("${api_key}") String apikey, @Value("${base_url}") String baseUrl) {
-        this.apikey = apikey;
-        this.baseUrl = baseUrl;
+    public StockService(@Value("${api_key}") String apiKey, @Value("${base_url}") String baseUrl, WebClient.Builder webClientBuilder) {
+        this.apiKey = apiKey;
+        this.restClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
     public String getStockName(String ticker) {
         try {
-            String apiUrl = baseUrl + "?function=SYMBOL_SEARCH&keywords=" + ticker
-                    + "&apikey=" + apikey;
+            String response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("function", "SYMBOL_SEARCH")
+                            .queryParam("keywords", ticker)
+                            .queryParam("apikey", apiKey)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet request = new HttpGet(apiUrl);
-            CloseableHttpResponse response = httpClient.execute(request);
-            try {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    String result = EntityUtils.toString(entity);
-                    JSONObject jsonObject = new JSONObject(result);
-                    JSONArray bestMatches = jsonObject.getJSONArray("bestMatches");
-                    if (!bestMatches.isEmpty()) {
-                        JSONObject match = bestMatches.getJSONObject(0);
-                        return match.getString("2. name");
-                    }
-                }
-            } finally {
-                response.close();
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray bestMatches = jsonObject.getJSONArray("bestMatches");
+            if (!bestMatches.isEmpty()) {
+                return bestMatches.getJSONObject(0).getString("2. name");
             }
-        } catch (Exception ex) {
-            throw new RuntimeException("Could not send HTTP request to Alpha Venture", ex);
+        } catch (WebClientResponseException ex) {
+            throw new RuntimeException("Error retrieving stock name", ex);
         }
         return "Unknown Company";
     }
+
     public double getStockPrice(String ticker) {
         try {
-            String apiUrl = baseUrl + "?function=TIME_SERIES_INTRADAY&symbol=" + ticker
-                    + "&interval=1min&apikey=" + apikey;
+            String response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .queryParam("function", "TIME_SERIES_INTRADAY")
+                            .queryParam("symbol", ticker)
+                            .queryParam("interval", "1min")
+                            .queryParam("apikey", apiKey)
+                            .build())
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
-            CloseableHttpClient httpClient = HttpClients.createDefault();
-            HttpGet request = new HttpGet(apiUrl);
-            CloseableHttpResponse response = httpClient.execute(request);
-            try {
-                HttpEntity entity = response.getEntity();
-                if (entity != null) {
-                    String result = EntityUtils.toString(entity);
-                    JSONObject jsonObject = new JSONObject(result);
-
-                    if (!jsonObject.has("Time Series (1min)")) {
-                        throw new IllegalStateException("Stock not found");
-                    }
-
-                    JSONObject timeSeries = jsonObject.getJSONObject("Time Series (1min)");
-                    String lastRefreshed = jsonObject.getJSONObject("Meta Data").getString("3. Last Refreshed");
-                    String latestPrice = timeSeries.getJSONObject(lastRefreshed).getString("1. open");
-                    return Double.parseDouble(latestPrice);
-                }
-            } finally {
-                response.close();
+            JSONObject jsonObject = new JSONObject(response);
+            if (!jsonObject.has("Time Series (1min)")) {
+                throw new IllegalStateException("Stock not found");
             }
-        } catch (Exception ex) {
-            throw new IllegalStateException("Stock not found", ex);
+
+            JSONObject timeSeries = jsonObject.getJSONObject("Time Series (1min)");
+            String lastRefreshed = jsonObject.getJSONObject("Meta Data").getString("3. Last Refreshed");
+            String latestPrice = timeSeries.getJSONObject(lastRefreshed).getString("1. open");
+
+            return Double.parseDouble(latestPrice);
+        } catch (WebClientResponseException ex) {
+            throw new IllegalStateException("Error retrieving stock price", ex);
         }
-        return 0;
     }
+
 }

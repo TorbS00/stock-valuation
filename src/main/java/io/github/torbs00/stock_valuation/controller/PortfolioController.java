@@ -8,7 +8,6 @@ import io.github.torbs00.stock_valuation.repository.PortfolioRepository;
 import io.github.torbs00.stock_valuation.repository.PortfolioUserRepository;
 import io.github.torbs00.stock_valuation.repository.StockTransactionRepository;
 import io.github.torbs00.stock_valuation.service.StockService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
