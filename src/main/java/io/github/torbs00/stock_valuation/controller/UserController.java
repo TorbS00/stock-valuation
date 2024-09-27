@@ -9,10 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * @author TorbS00 on 25.09.2024.
- * @project stock-valuation.
- */
 @Controller
 public class UserController {
 

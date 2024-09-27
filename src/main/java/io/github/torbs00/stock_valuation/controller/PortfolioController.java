@@ -16,10 +16,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-/**
- * @author TorbS00 on 25.09.2024.
- * @project stock-valuation.
- */
 @Controller
 @RequestMapping("/portfolio")
 public class PortfolioController {

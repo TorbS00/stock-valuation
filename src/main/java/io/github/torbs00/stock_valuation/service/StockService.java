@@ -7,10 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-/**
- * @author TorbS00 on 27.09.2024.
- * @project stock-valuation.
- */
 @Service
 public class StockService {
 
@@ -22,6 +18,12 @@ public class StockService {
         this.restClient = webClientBuilder.baseUrl(baseUrl).build();
     }
 
+    /**
+     * Gets the stock name from AlphaVantage.
+     *
+     * @param ticker
+     * @return Most likely stock name from ticker
+     */
     public String getStockName(String ticker) {
         try {
             String response = restClient.get()
@@ -45,6 +47,12 @@ public class StockService {
         return "Unknown Company";
     }
 
+    /**
+     * Gets the stock price from AlphaVantage.
+     *
+     * @param ticker
+     * @return Stock price
+     */
     public double getStockPrice(String ticker) {
         try {
             String response = restClient.get()

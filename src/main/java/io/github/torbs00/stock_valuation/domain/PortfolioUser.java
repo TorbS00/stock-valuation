@@ -5,10 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-/**
- * @author TorbS00 on 24.09.2024.
- * @project stock-valuation.
- */
 @Entity
 public class PortfolioUser {
 

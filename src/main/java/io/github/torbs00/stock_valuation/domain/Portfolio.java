@@ -4,10 +4,6 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-/**
- * @author TorbS00 on 24.09.2024.
- * @project stock-valuation.
- */
 @Entity
 public class Portfolio {
 

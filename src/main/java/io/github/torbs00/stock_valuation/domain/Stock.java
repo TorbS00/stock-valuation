@@ -1,9 +1,5 @@
 package io.github.torbs00.stock_valuation.domain;
 
-/**
- * @author TorbS00 on 24.09.2024.
- * @project stock-valuation.
- */
 
 import jakarta.persistence.*;
 
