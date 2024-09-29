@@ -38,15 +38,23 @@ public class PortfolioController {
         PortfolioUser user = portfolioUserRepository.findByName(username);
         Portfolio portfolio = portfolioRepository.findByUser(user);
         model.addAttribute("notfound", null);
+
+        double price = 0;
+        String stockName = "Unknown Company";
+
         try {
-            double price = stockService.getStockPrice(stockSymbol);
-            String stockName = stockService.getStockName(stockSymbol);
-            StockTransaction transaction = new StockTransaction(portfolio, new Stock(stockSymbol, stockName, price), price, amount, true, LocalDateTime.now());
-            stockTransactionRepository.save(transaction);
-        } catch (Exception swallowed) {
+            price = stockService.getStockPrice(stockSymbol);
+            stockName = stockService.getStockName(stockSymbol);
+
+        } catch (RuntimeException swallowed) {
             redirectAttributes.addFlashAttribute("notfound", "Found no stock with the provided ticker value");
             return "redirect:/portfolio/" + user.getName();
         }
+        if (price > 0 || !stockName.equalsIgnoreCase("Unknown Company")) {
+            StockTransaction transaction = new StockTransaction(portfolio, new Stock(stockSymbol, stockName, price), price, amount, true, LocalDateTime.now());
+            stockTransactionRepository.save(transaction);
+        }
+
         return "redirect:/portfolio/" + username;
     }
 
