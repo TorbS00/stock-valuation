@@ -4,15 +4,15 @@ public class AggregatedStockPosition {
 
     private String symbol;
     private String name;
-    private double totalPurchasePrice;
     private int totalShares;
+    private double totalPurchasePrice;
     private double totalCurrentValue;
 
-    public AggregatedStockPosition(String symbol, String name, double totalPurchasePrice, int totalShares, double totalCurrentValue) {
+    public AggregatedStockPosition(String symbol, String name, int totalShares, double totalPurchasePrice, double totalCurrentValue) {
         this.symbol = symbol;
         this.name = name;
-        this.totalPurchasePrice = totalPurchasePrice;
         this.totalShares = totalShares;
+        this.totalPurchasePrice = totalPurchasePrice;
         this.totalCurrentValue = totalCurrentValue;
     }
 

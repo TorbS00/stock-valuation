@@ -27,15 +27,14 @@ public class PortfolioService {
             String name = position.getName();
             int shares = position.getShares();
             double totalPurchasePrice = position.getTotalPurchasePrice();
-            double totalCurrentValue = position.getTotalPurchasePrice();
 
             if (aggregatedPositions.containsKey(symbol)) {
                 AggregatedStockPosition existing = aggregatedPositions.get(symbol);
                 existing.setTotalShares(existing.getTotalShares() + shares);
                 existing.setTotalPurchasePrice(existing.getTotalPurchasePrice() + totalPurchasePrice);
-                existing.setTotalCurrentValue(existing.getTotalPurchasePrice() + totalCurrentValue);
+                existing.setTotalCurrentValue(existing.getTotalPurchasePrice());
             } else {
-                aggregatedPositions.put(symbol, new AggregatedStockPosition(symbol, name, totalPurchasePrice, shares, totalCurrentValue));
+                aggregatedPositions.put(symbol, new AggregatedStockPosition(symbol, name, shares, totalPurchasePrice, totalPurchasePrice));
             }
         }
 

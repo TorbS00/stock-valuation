@@ -1,40 +1,82 @@
-<!-- portfolio.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link th:href="@{/css/portfolio.css}" rel="stylesheet" />
     <title>Portfolio</title>
 </head>
 <body>
-<h1>Portfolio for <span th:text="${username}"></span></h1>
+<div class="container">
+    <div class="column">
+        <div class="item item-1">
+            <p>
+                To trade stocks, simply input the stock symbol, also known as the
+                ticker, along with the amount of shares you want to trade. You can
+                then click "Buy" to add the stock to your portfolio or "Sell" to
+                remove shares from your holdings.
+            </p>
+            <p th:if="${notfound != null}" th:text="${notfound}"></p>
+            <p th:if="${notany != null}" th:text="${notany}"></p>
+            <p th:if="${notenough != null}" th:text="${notenough}"></p>
+            <h3>Buy stocks:</h3>
+            <form class="box" action="/portfolio/buy" method="POST">
+                <label for="symbol">Stock:</label>
+                <input type="text" id="symbol" name="symbol" required />
 
-<h2>Your Stocks</h2>
-<ul>
-    <li th:each="transaction : ${portfolio.transactions}">
-        Stock: <span th:text="${transaction.stock.symbol}"></span> -
-        Amount: <span th:text="${transaction.amount}"></span> -
-        Purchase Price: <span th:text="${transaction.purchasePrice}"></span>
-    </li>
-</ul>
+                <label for="shares">Shares:</label>
+                <input type="number" min="1" id="shares" name="shares" required />
 
-<h3>Buy Stocks</h3>
-<p th:if="${notfound != null}" th:text="${notfound}"></p>
-<form action="/portfolio/buy" method="POST">
-    <label for="stockSymbol">Stock Ticker:</label>
-    <input type="text" id="stockSymbol" name="stockSymbol" required>
-    <label for="amount">Amount:</label>
-    <input type="number" min="0" id="amount" name="amount" required>
-    <input type="hidden" name="username" th:value="${username}">
-    <button type="submit">Buy</button>
-</form>
+                <input type="hidden" name="username" th:value="${username}">
 
-<h3>Sell Stocks</h3>
-<form action="/portfolio/sell" method="POST">
-    <label for="stockSymbolSell">Stock Ticker:</label>
-    <input type="text" id="stockSymbolSell" name="stockSymbol" required>
-    <label for="amountSell">Amount:</label>
-    <input type="number" min="0" id="amountSell" name="amountToSell" required>
-    <input type="hidden" name="username" th:value="${username}">
-    <button type="submit">Sell</button>
-</form>
+                <button type="submit">Buy</button>
+            </form>
+            <h3>Sell stocks:</h3>
+            <form class="box" action="/portfolio/sell" method="POST">
+                <label for="symbolSell">Stock:</label>
+                <input type="text" id="symbolSell" name="symbol" required />
+
+                <label for="sharesSell">Shares:</label>
+                <input type="number" min="1" id="sharesSell" name="shares" required />
+
+                <input type="hidden" name="username" th:value="${username}">
+
+                <button type="submit">Sell</button>
+            </form>
+        </div>
+        <div class="item item-2">
+            <h3 id="item-2-header">Analytics</h3>
+            <p>
+                Your portfolio is analyzed advanced using Monte Carlo simulations,
+                discounted cash flow (DCF) analysis, and Sharpe Ratio calculations.
+            </p>
+        </div>
+    </div>
+    <div class="column">
+        <div class="item item-3">Portfolio</div>
+        <div class="item item-4">
+            <table>
+                <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Company</th>
+                    <th>Shares</th>
+                    <th>Purchase Price</th>
+                    <th>Current Value</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="stockPosition : ${portfolio}">
+                    <td th:text="${stockPosition.symbol}"></td>
+                    <td th:text="${stockPosition.name}"></td>
+                    <td th:text="${stockPosition.totalShares}"></td>
+                    <td th:text="${stockPosition.totalPurchasePrice}"></td>
+                    <td th:text="${stockPosition.totalCurrentValue}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
 </html>
