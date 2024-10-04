@@ -1,9 +1,9 @@
 package io.github.torbs00.stock_valuation.repository;
 
-import io.github.torbs00.stock_valuation.domain.UserStockholder;
+import io.github.torbs00.stock_valuation.domain.Stockholder;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserStockholderRepository extends JpaRepository<UserStockholder, Long> {
+public interface StockholderRepository extends JpaRepository<Stockholder, Long> {
 
     /**
      * Gets the UserStockholder by username
@@ -11,7 +11,7 @@ public interface UserStockholderRepository extends JpaRepository<UserStockholder
      * @param username
      * @return UserStockholder
      */
-    UserStockholder findByUsername(String username);
+    Stockholder findByUsername(String username);
 
 
 

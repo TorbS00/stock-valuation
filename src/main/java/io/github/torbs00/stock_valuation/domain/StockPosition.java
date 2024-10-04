@@ -11,7 +11,7 @@ public class StockPosition {
 
     @ManyToOne
     @JoinColumn(name = "stockholder_id")
-    private UserStockholder stockholder;
+    private Stockholder stockholder;
 
     private String symbol;
     private String name;
@@ -22,7 +22,7 @@ public class StockPosition {
     public StockPosition() {
     }
 
-    public StockPosition(UserStockholder stockholder, String symbol, String name, int shares, double singleSharePrice, double currentPrice) {
+    public StockPosition(Stockholder stockholder, String symbol, String name, int shares, double singleSharePrice, double currentPrice) {
         this.stockholder = stockholder;
         this.symbol = symbol;
         this.name = name;
@@ -31,11 +31,11 @@ public class StockPosition {
         this.currentPrice = currentPrice;
     }
 
-    public UserStockholder getStockholder() {
+    public Stockholder getStockholder() {
         return stockholder;
     }
 
-    public void setStockholder(UserStockholder stockholder) {
+    public void setStockholder(Stockholder stockholder) {
         this.stockholder = stockholder;
     }
 

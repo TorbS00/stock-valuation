@@ -1,7 +1,7 @@
 package io.github.torbs00.stock_valuation.controller;
 
-import io.github.torbs00.stock_valuation.domain.UserStockholder;
-import io.github.torbs00.stock_valuation.repository.UserStockholderRepository;
+import io.github.torbs00.stock_valuation.domain.Stockholder;
+import io.github.torbs00.stock_valuation.repository.StockholderRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class StockholderController {
 
-    private final UserStockholderRepository userStockholderRepository;
+    private final StockholderRepository stockholderRepository;
 
-    public StockholderController(UserStockholderRepository userStockholderRepository) {
-        this.userStockholderRepository = userStockholderRepository;
+    public StockholderController(StockholderRepository stockholderRepository) {
+        this.stockholderRepository = stockholderRepository;
     }
 
     @GetMapping("/")
@@ -23,11 +23,11 @@ public class StockholderController {
 
     @PostMapping("/login")
     public String loginUser(@RequestParam String username) {
-        UserStockholder stockholder = userStockholderRepository.findByUsername(username);
+        Stockholder stockholder = stockholderRepository.findByUsername(username);
 
         if(stockholder == null) {
-            stockholder = new UserStockholder(username);
-            userStockholderRepository.save(stockholder);
+            stockholder = new Stockholder(username);
+            stockholderRepository.save(stockholder);
         }
         return "redirect:/portfolio/" + stockholder.getUsername();
     }

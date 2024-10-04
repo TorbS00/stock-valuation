@@ -2,9 +2,9 @@ package io.github.torbs00.stock_valuation.controller;
 
 import io.github.torbs00.stock_valuation.domain.AggregatedStockPosition;
 import io.github.torbs00.stock_valuation.domain.StockPosition;
-import io.github.torbs00.stock_valuation.domain.UserStockholder;
+import io.github.torbs00.stock_valuation.domain.Stockholder;
 import io.github.torbs00.stock_valuation.repository.StockPositionRepository;
-import io.github.torbs00.stock_valuation.repository.UserStockholderRepository;
+import io.github.torbs00.stock_valuation.repository.StockholderRepository;
 import io.github.torbs00.stock_valuation.service.PortfolioService;
 import io.github.torbs00.stock_valuation.service.StockService;
 import org.springframework.stereotype.Controller;
@@ -19,14 +19,14 @@ import java.util.List;
 @RequestMapping("/portfolio")
 public class StockPositionController {
 
-    private final UserStockholderRepository userStockholderRepository;
+    private final StockholderRepository stockholderRepository;
     private final StockPositionRepository stockPositionRepository;
 
     private final StockService stockService;
     private final PortfolioService portfolioService;
 
-    public StockPositionController(UserStockholderRepository userStockholderRepository, StockPositionRepository stockPositionRepository, StockService stockService, PortfolioService portfolioService) {
-        this.userStockholderRepository = userStockholderRepository;
+    public StockPositionController(StockholderRepository stockholderRepository, StockPositionRepository stockPositionRepository, StockService stockService, PortfolioService portfolioService) {
+        this.stockholderRepository = stockholderRepository;
         this.stockPositionRepository = stockPositionRepository;
         this.stockService = stockService;
         this.portfolioService = portfolioService;
@@ -35,7 +35,7 @@ public class StockPositionController {
     @PostMapping("/buy")
     public String buyStock(@RequestParam String username, @RequestParam String symbol,
                            @RequestParam int shares, RedirectAttributes redirectAttributes) {
-        UserStockholder stockholder = userStockholderRepository.findByUsername(username);
+        Stockholder stockholder = stockholderRepository.findByUsername(username);
 
         double singleSharePrice = 0;
         String stockName = "Unknown Company";
@@ -58,7 +58,7 @@ public class StockPositionController {
     @PostMapping("/sell")
     public String sellStock(@RequestParam String username, @RequestParam String symbol,
                             @RequestParam int shares, RedirectAttributes redirectAttributes) {
-        UserStockholder stockholder = userStockholderRepository.findByUsername(username);
+        Stockholder stockholder = stockholderRepository.findByUsername(username);
 
         List<StockPosition> positions = stockPositionRepository.findByStockholderAndAndSymbol(stockholder, symbol.toUpperCase());
 
@@ -73,7 +73,6 @@ public class StockPositionController {
             redirectAttributes.addFlashAttribute("notenough", "Don't own enough shares for this stock");
             return "redirect:/portfolio/" + stockholder.getUsername();
         }
-
 
         double singleSharePrice = 0;
 
@@ -102,7 +101,7 @@ public class StockPositionController {
 
     @GetMapping("/{username}")
     public String showPortfolioByName(@PathVariable String username, Model model) {
-        UserStockholder stockholder = userStockholderRepository.findByUsername(username);
+        Stockholder stockholder = stockholderRepository.findByUsername(username);
         if (stockholder == null) {
             return "redirect:/404";
         }
@@ -111,6 +110,7 @@ public class StockPositionController {
 
         model.addAttribute("portfolio", portfolio);
         model.addAttribute("username", stockholder.getUsername());
+        model.addAttribute("return", stockholder.getTotalReturn());
 
         return "portfolio";
     }

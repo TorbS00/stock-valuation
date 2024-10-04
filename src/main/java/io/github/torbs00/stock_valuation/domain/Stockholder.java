@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class UserStockholder {
+public class Stockholder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,16 +19,16 @@ public class UserStockholder {
     @OneToMany(mappedBy = "stockholder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<StockPosition> holdings;
 
-    public UserStockholder() {
+    public Stockholder() {
     }
 
-    public UserStockholder(String username) {
+    public Stockholder(String username) {
         this.username = username;
         this.totalReturn = 0;
         this.holdings = new ArrayList<>();
     }
 
-    public UserStockholder(String username, double totalReturn, List<StockPosition> holdings) {
+    public Stockholder(String username, double totalReturn, List<StockPosition> holdings) {
         this.username = username;
         this.totalReturn = totalReturn;
         this.holdings = holdings;
@@ -44,6 +44,14 @@ public class UserStockholder {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public double getTotalReturn() {
+        return totalReturn;
+    }
+
+    public void setTotalReturn(double totalReturn) {
+        this.totalReturn = totalReturn;
     }
 
     public List<StockPosition> getHoldings() {
